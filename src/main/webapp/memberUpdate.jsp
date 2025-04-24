@@ -1,5 +1,5 @@
-<%@ page import="com.example.ch16.vo.MemberVo" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page import="com.example.ch16.vo.MemberVo" %>
 
 <html>
 <head>
@@ -21,10 +21,10 @@
     if (member != null) {
 %>      <h3>회원 정보 수정</h3>
         <form action="memberUpdate.do" method="post">
-            <input type="text" name="id" value="${member.id}" readonly><br>
-            <input type="text" name="password" value="${member.password}"><br>
-            <input type="text" name="name" value="${member.name}"><br>
-            <input type="text" name="email" value="${member.email}"><br>
+            <input type="text" name="id" value="<%= member.id() %>" readonly><br>
+            <input type="text" name="password" value="<%= member.password() %> "><br>
+            <input type="text" name="name" value="<%= member.name() %> "><br>
+            <input type="text" name="email" value="<%= member.email() %> "><br>
             <input type="submit" value="수정">
         </form>
 <%

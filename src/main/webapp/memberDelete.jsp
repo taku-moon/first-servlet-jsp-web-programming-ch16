@@ -1,5 +1,5 @@
-<%@ page import="com.example.ch16.vo.MemberVo" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page import="com.example.ch16.vo.MemberVo" %>
 
 <html>
 <head>
@@ -20,10 +20,10 @@
     MemberVo member = (MemberVo) request.getAttribute("member");
     if (member != null) {
 %>      <h3>검색 정보 결과</h3>
-        ${member.id} / ${member.password} / ${member.name} / ${member.email}
+        <%= member.id() %> / <%= member.password() %> / <%= member.name() %> / <%= member.email() %>
 
         <form action="memberDelete.do" method="post">
-            <input type="hidden" name="id" value="${member.id}"><br>
+            <input type="hidden" name="id" value="<%= member.id() %>"><br>
             <input type="submit" value="삭제">
         </form>
 <%

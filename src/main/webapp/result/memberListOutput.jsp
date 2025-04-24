@@ -1,6 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ page import="java.util.*" %>
 <%@ page import="com.example.ch16.vo.MemberVo" %>
+<%@ page import="java.util.*" %>
 
 <html>
 <head>
@@ -13,19 +13,16 @@
 %>
     <table border="1">
         <tr>
-            <th>아이디</th>
-            <th>비밀번호</th>
-            <th>이름</th>
-            <th>이메일</th>
+            <th>아이디</th><th>비밀번호</th><th>이름</th><th>이메일</th>
         </tr>
         <%
             for (int i = 0; i < members.size(); i++) {
                 MemberVo member = members.get(i); %>
                 <tr>
-                    <td><%=member.getId()%></td>
-                    <td><%=member.getPassword()%></td>
-                    <td><%=member.getName()%></td>
-                    <td><%=member.getEmail()%></td>
+                    <td><%=member.id()%></td>
+                    <td><%=member.password()%></td>
+                    <td><%=member.name()%></td>
+                    <td><%=member.email()%></td>
                 </tr>
 <%
             }

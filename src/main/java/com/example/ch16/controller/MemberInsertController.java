@@ -22,11 +22,7 @@ public class MemberInsertController implements Controller {
             return "/memberInsert";
         }
 
-        MemberVo member = new MemberVo();
-        member.setId(id);
-        member.setPassword(password);
-        member.setName(name);
-        member.setEmail(email);
+        MemberVo member = new MemberVo(id, password, name, email);
 
         MemberService service = MemberService.getInstance();
         service.memberInsert(member);
