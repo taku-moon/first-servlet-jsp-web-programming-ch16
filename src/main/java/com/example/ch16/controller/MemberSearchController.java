@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
+import java.util.NoSuchElementException;
 
 public class MemberSearchController implements Controller {
 
@@ -25,19 +26,18 @@ public class MemberSearchController implements Controller {
         }
 
         if (id.isEmpty()) {
-            request.setAttribute("error", "ID를 입력해 주세요.");
+            request.setAttribute("error", "아이디를 입력해 주세요.");
             return path;
         }
 
         MemberService service = MemberService.getInstance();
-        MemberVo member = service.memberSearch(id);
 
-        if (member == null) {
+        try {
+            MemberVo member = service.memberSearch(id);
+            request.setAttribute("member", member);
+        } catch (NoSuchElementException noSuchElementException) {
             request.setAttribute("result", "검색된 정보가 없습니다.");
-            return path;
         }
-
-        request.setAttribute("member", member);
 
         if (job.equals("search")) {
             path = "memberSearchOutput";
