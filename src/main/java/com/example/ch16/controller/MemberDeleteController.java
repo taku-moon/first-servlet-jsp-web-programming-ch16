@@ -1,6 +1,5 @@
 package com.example.ch16.controller;
 
-import com.example.ch16.controller.util.HttpUtil;
 import com.example.ch16.service.MemberService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -11,12 +10,10 @@ import java.io.IOException;
 public class MemberDeleteController implements Controller {
 
     @Override
-    public void execute(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String id = request.getParameter("id");
-
+    public String execute(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         MemberService service = MemberService.getInstance();
-        service.memberDelete(id);
+        service.memberDelete(request.getParameter("id"));
 
-        HttpUtil.forward(request, response, "/result/memberDeleteOutput.jsp");
+        return "memberDeleteOutput";
     }
 }

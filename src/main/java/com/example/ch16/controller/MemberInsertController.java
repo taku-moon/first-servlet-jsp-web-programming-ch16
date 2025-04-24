@@ -1,6 +1,5 @@
 package com.example.ch16.controller;
 
-import com.example.ch16.controller.util.HttpUtil;
 import com.example.ch16.service.MemberService;
 import com.example.ch16.vo.MemberVo;
 import jakarta.servlet.ServletException;
@@ -12,16 +11,15 @@ import java.io.IOException;
 public class MemberInsertController implements Controller {
 
     @Override
-    public void execute(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    public String execute(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String id = request.getParameter("id");
         String password = request.getParameter("password");
         String name = request.getParameter("name");
         String email = request.getParameter("email");
 
-        if (id.isEmpty() || password.isEmpty() || name.isEmpty() || email.isEmpty()) {
-            request.setAttribute("error", "모든 항목을 빠짐없이 입력해 주세요.");
-            HttpUtil.forward(request, response, "/memberInsert.jsp");
-            return;
+        if (id.isEmpty() || password.isEmpty() || name.isEmpty()) {
+            request.setAttribute("error", "아이디, 비밀번호, 이름은 필수입니다.");
+            return "/memberInsert";
         }
 
         MemberVo member = new MemberVo();
@@ -34,6 +32,7 @@ public class MemberInsertController implements Controller {
         service.memberInsert(member);
 
         request.setAttribute("id", id);
-        HttpUtil.forward(request, response, "/result/memberInsertOutput.jsp");
+
+        return "memberInsertOutput";
     }
 }
