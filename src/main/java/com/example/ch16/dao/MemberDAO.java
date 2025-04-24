@@ -3,122 +3,122 @@ package com.example.ch16.dao;
 import com.example.ch16.vo.MemberVo;
 import com.mysql.cj.jdbc.MysqlDataSource;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 
-public class MemberDAO {
-    private static MemberDAO dao = new MemberDAO();
+public abstract class MemberDAO {
+    private static final String URL = "jdbc:mysql://localhost:3306/firstservletjsp";
+    private static final String USER = "firstservletjsp-user";
+    private static final String PASSWORD = "1234";
 
-    private MemberDAO() {
+    private static final MysqlDataSource dataSource = new MysqlDataSource();
+
+    private static Connection getConnection() throws SQLException {
+        dataSource.setURL(URL);
+        dataSource.setUser(USER);
+        dataSource.setPassword(PASSWORD);
+
+        return dataSource.getConnection();
     }
 
-    public static MemberDAO getInstance() {
-        return dao;
-    }
+    public static void memberInsert(MemberVo member) {
+        final String sql = "insert into member values (?, ?, ?, ?)";
 
-    public Connection getConnection() {
-        MysqlDataSource dataSource = new MysqlDataSource();
-        dataSource.setURL("jdbc:mysql://localhost:3306/firstservletjsp");
-        dataSource.setUser("firstservletjsp-user");
-        dataSource.setPassword("1234");
-
-        Connection connection = null;
-        try {
-            connection = dataSource.getConnection();
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
-
-        return connection;
-    }
-
-    public void memberInsert(MemberVo member) {
-        try (Connection connection = getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement("insert into member values (?, ?, ?, ?)")
+        try (final Connection connection = getConnection();
+             final PreparedStatement preparedStatement = connection.prepareStatement(sql)
         ) {
             preparedStatement.setString(1, member.id());
             preparedStatement.setString(2, member.password());
             preparedStatement.setString(3, member.name());
             preparedStatement.setString(4, member.email());
             preparedStatement.executeUpdate();
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
+        } catch (SQLException sqlException) {
+            System.out.println(sqlException.getMessage());
+            throw new RuntimeException(sqlException);
         }
     }
 
-    public MemberVo memberSearch(String id) {
-        MemberVo member = null;
+    public static void memberUpdate(MemberVo member) {
+        final String sql = "update member set password = ?, name = ?, email = ? where id = ?";
 
-        try (Connection connection = getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement("select * from member where id=?")
-        ) {
-            preparedStatement.setString(1, id);
-
-            try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                if (resultSet.next()) {
-                    member = new MemberVo(
-                            resultSet.getString(1),
-                            resultSet.getString(2),
-                            resultSet.getString(3),
-                            resultSet.getString(4)
-                    );
-                }
-            }
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
-
-        return member;
-    }
-
-    public void memberUpdate(MemberVo member) {
-        try (Connection connection = getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement("update member set password=?, name=?, email=? where id=?");
+        try (final Connection connection = getConnection();
+             final PreparedStatement preparedStatement = connection.prepareStatement(sql);
          ) {
             preparedStatement.setString(1, member.password());
             preparedStatement.setString(2, member.name());
             preparedStatement.setString(3, member.email());
             preparedStatement.setString(4, member.id());
             preparedStatement.executeUpdate();
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
+        } catch (SQLException sqlException) {
+            System.out.println(sqlException.getMessage());
+            throw new RuntimeException(sqlException);
         }
     }
 
-    public void memberDelete(String id) {
-        try (Connection connection = getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement("delete from member where id=?");
+    public static void memberDelete(String id) {
+        final String sql = "delete from member where id = ?";
+
+        try (final Connection connection = getConnection();
+             final PreparedStatement preparedStatement = connection.prepareStatement(sql);
         ) {
             preparedStatement.setString(1, id);
             preparedStatement.executeUpdate();
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
+        } catch (SQLException sqlException) {
+            System.out.println(sqlException.getMessage());
+            throw new RuntimeException(sqlException);
         }
     }
 
-    public List<MemberVo> memberList() {
-        List<MemberVo> members = new ArrayList<>();
+    public static MemberVo memberSearch(String id) {
+        final String sql = "select * from member where id = ?";
 
-        try (Connection connection = getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement("select * from member");
-             ResultSet resultSet = preparedStatement.executeQuery()
+        try (final Connection connection = getConnection();
+             final PreparedStatement preparedStatement = connection.prepareStatement(sql)
+        ) {
+            preparedStatement.setString(1, id);
+
+            try (final ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (!resultSet.next()) {
+                    throw new NoSuchElementException("No such member");
+                }
+
+                return new MemberVo(
+                        resultSet.getString("id"),
+                        resultSet.getString("password"),
+                        resultSet.getString("name"),
+                        resultSet.getString("email")
+                );
+            }
+        } catch (SQLException sqlException) {
+            System.out.println(sqlException.getMessage());
+            throw new RuntimeException(sqlException);
+        }
+    }
+
+    public static List<MemberVo> memberList() {
+        final String sql = "select * from member";
+
+        try (final Connection connection = getConnection();
+             final Statement statement = connection.createStatement();
+             final ResultSet resultSet = statement.executeQuery(sql)
          ) {
+            final List<MemberVo> members = new ArrayList<>();
+
             while (resultSet.next()) {
-                MemberVo member = new MemberVo(
+                members.add(new MemberVo(
                         resultSet.getString(1),
                         resultSet.getString(2),
                         resultSet.getString(3),
                         resultSet.getString(4)
-                );
-                members.add(member);
+                ));
             }
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
 
-        return members;
+            return members;
+        } catch (SQLException sqlException) {
+            System.out.println(sqlException.getMessage());
+            throw new RuntimeException(sqlException);
+        }
     }
 }

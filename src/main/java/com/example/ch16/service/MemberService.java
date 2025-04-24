@@ -7,7 +7,6 @@ import java.util.List;
 
 public class MemberService {
     private static MemberService service = new MemberService();
-    private MemberDAO dao = MemberDAO.getInstance();
 
     private MemberService() {
     }
@@ -17,22 +16,22 @@ public class MemberService {
     }
 
     public void memberInsert(MemberVo member) {
-        dao.memberInsert(member);
-    }
-
-    public MemberVo memberSearch(String id) {
-        return dao.memberSearch(id);
+        MemberDAO.memberInsert(member);
     }
 
     public void memberUpdate(MemberVo member) {
-        dao.memberUpdate(member);
+        MemberDAO.memberUpdate(member);
     }
 
     public void memberDelete(String id) {
-        dao.memberDelete(id);
+        MemberDAO.memberDelete(id);
+    }
+
+    public MemberVo memberSearch(String id) {
+        return MemberDAO.memberSearch(id);
     }
 
     public List<MemberVo> memberList() {
-        return dao.memberList();
+        return MemberDAO.memberList();
     }
 }
