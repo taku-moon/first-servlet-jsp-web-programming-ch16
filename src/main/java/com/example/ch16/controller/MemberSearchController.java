@@ -18,11 +18,11 @@ public class MemberSearchController implements Controller {
         String path = null;
 
         if (job.equals("search")) {
-            path = "/memberSearch";
+            path = "memberSearch";
         } else if (job.equals("update")) {
-            path = "/memberUpdate";
+            path = "memberUpdate";
         } else if (job.equals("delete")) {
-            path = "/memberDelete";
+            path = "memberDelete";
         }
 
         if (id.isEmpty()) {

@@ -19,7 +19,7 @@ public class MemberUpdateController implements Controller {
 
         if (id.isEmpty() || password.isEmpty() || name.isEmpty()) {
             request.setAttribute("error", "아이디, 비밀번호, 이름은 필수입니다.");
-            return "/memberUpdate";
+            return "memberUpdate";
         }
 
         MemberVo member = new MemberVo(id, password, name, email);

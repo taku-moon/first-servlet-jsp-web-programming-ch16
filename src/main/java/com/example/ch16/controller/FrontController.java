@@ -9,10 +9,16 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Map;
 
-@WebServlet(urlPatterns = "*.do")
+@WebServlet(urlPatterns = "/*")
 public class FrontController extends HttpServlet {
 
     private final Map<String, Controller> subControllers = Map.of(
+            "/index.jsp", new HomePageController(),
+            "/memberInsert.jsp", new MemberInsertPageController(),
+            "/memberSearch.jsp", new MemberSearchPageController(),
+            "/memberUpdate.jsp", new MemberUpdatePageController(),
+            "/memberDelete.jsp", new MemberDeletePageController(),
+
             "/memberInsert.do", new MemberInsertController(),
             "/memberSearch.do", new MemberSearchController(),
             "/memberUpdate.do", new MemberUpdateController(),
@@ -22,9 +28,8 @@ public class FrontController extends HttpServlet {
 
     @Override
     protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        request.setCharacterEncoding("UTF-8");
-
         String uri = request.getRequestURI();
+
         Controller subController = subControllers.get(uri);
 
         if (subController == null) {
@@ -34,7 +39,7 @@ public class FrontController extends HttpServlet {
         }
 
         String view = subController.execute(request, response);
-        String viewPath = (view.startsWith("/")) ? (view + ".jsp") : ("/result/" + view + ".jsp");
+        String viewPath = "/WEB-INF/views/" + view + ".jsp";
 
         request.getRequestDispatcher(viewPath).forward(request, response);
     }
